@@ -1,0 +1,37 @@
+service: api
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  profile: stock-app
+  stage: ${env:STAGE}
+  region: us-east-1
+  environment:
+    POSTGRES_DB: ${env:POSTGRES_DB}
+    POSTGRES_USER: ${env:POSTGRES_USER}
+    POSTGRES_PASSWORD: ${env:POSTGRES_PASSWORD}
+    DB_HOST: ${env:DB_HOST}
+
+functions:
+  stocks:
+    handler: app/routes/Stocks.handler
+    events:
+      - http:
+          path: /stocks
+          method: any
+          cors: true
+  historical_daily:
+    handler: app/routes/Historical.handler
+    events:
+      - http:
+          path: /historical
+          method: any
+          cors: true
+      - http:
+          path: /historical/{proxy+}
+          method: any
+          cors: true
